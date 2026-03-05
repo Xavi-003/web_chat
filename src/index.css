@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: hsl(222, 84%, 3%);
+  --color-bg-secondary: hsl(222, 40%, 7%);
+  --color-bg-panel: hsl(222, 40%, 10%);
+  --color-bg-hover: hsl(222, 40%, 13%);
+  --color-bg-selected: hsl(222, 40%, 16%);
+  --color-bg-bubble-out: hsl(210, 70%, 20%);
+  --color-bg-bubble-in: hsl(222, 40%, 12%);
+  --color-accent: hsl(176, 80%, 50%);
+  --color-accent-dim: hsl(176, 60%, 35%);
+  --color-accent-glow: hsl(176, 100%, 60%);
+  --color-border-subtle: hsl(222, 40%, 16%);
+  --color-text-primary: hsl(210, 20%, 92%);
+  --color-text-secondary: hsl(210, 15%, 60%);
+  --color-text-muted: hsl(210, 10%, 40%);
+  --color-danger: hsl(0, 80%, 55%);
+  --color-success: hsl(145, 65%, 45%);
+  --color-warning: hsl(38, 90%, 55%);
+
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+
+  --shadow-glow-accent: 0 0 20px hsl(176 80% 50% / 0.3);
+  --shadow-glow-accent-sm: 0 0 8px hsl(176 80% 50% / 0.4);
+  --shadow-panel: 0 4px 32px hsl(222 84% 3% / 0.8);
+
+  --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-fade-in: fadeIn 0.2s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  background-color: hsl(222, 84%, 3%);
+  color: hsl(210, 20%, 92%);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(222, 40%, 20%);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(176, 60%, 35%);
+}
+
+/* ── Reusable component classes ───────────────────────────────── */
+.glass-panel {
+  background-color: hsl(222 40% 10% / 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid hsl(222 40% 16% / 0.5);
+}
+
+.glass-panel-hover {
+  transition: background-color 150ms;
+}
+
+.glass-panel-hover:hover {
+  background-color: hsl(222, 40%, 13%);
+}
+
+.btn-primary {
+  background-color: hsl(176, 80%, 50%);
+  color: hsl(222, 84%, 3%);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms;
+  box-shadow: 0 0 8px hsl(176 80% 50% / 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  background-color: hsl(176, 100%, 60%);
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid hsl(176 80% 50% / 0.5);
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-ghost {
+  color: hsl(210, 15%, 60%);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-ghost:hover {
+  color: hsl(210, 20%, 92%);
+  background-color: hsl(222, 40%, 13%);
+}
+
+.btn-ghost:active {
+  transform: scale(0.95);
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid hsl(176 80% 50% / 0.3);
+  outline-offset: 2px;
+}
+
+.input-base {
+  background-color: hsl(222, 40%, 7%);
+  border: 1px solid hsl(222, 40%, 16%);
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  color: hsl(210, 20%, 92%);
+  font-size: 0.875rem;
+  transition: all 150ms;
+  font-family: 'Inter', system-ui, sans-serif;
+  width: 100%;
+}
+
+.input-base::placeholder {
+  color: hsl(210, 10%, 40%);
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: hsl(176 60% 35% / 0.6);
+  box-shadow: 0 0 0 1px hsl(176 80% 50% / 0.3);
+}
+
+.message-bubble-out {
+  background-color: hsl(210, 70%, 20%);
+  border-radius: 1rem;
+  border-top-right-radius: 0.25rem;
+  padding: 0.625rem 1rem;
+  max-width: min(28rem, 75%);
+  color: hsl(210, 20%, 92%);
+  font-size: 0.875rem;
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.2);
+}
+
+.message-bubble-in {
+  background-color: hsl(222, 40%, 12%);
+  border-radius: 1rem;
+  border-top-left-radius: 0.25rem;
+  padding: 0.625rem 1rem;
+  max-width: min(28rem, 75%);
+  color: hsl(210, 20%, 92%);
+  font-size: 0.875rem;
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.2);
+  border: 1px solid hsl(222 40% 16% / 0.3);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
