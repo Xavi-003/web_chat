@@ -108,6 +108,10 @@ export class VortexRTC {
         };
     }
 
+    public isReady() {
+        return this.dataChannel?.readyState === 'open';
+    }
+
     /**
      * CALLER: Creates an offer.
      * State flow: new → have-local-offer

@@ -58,6 +58,9 @@ interface VortexStore {
     localStream: MediaStream | null;
     remoteStream: MediaStream | null;
     isVideoCallModalOpen: boolean;
+    isHydrated: boolean;
+    isLocked: boolean;
+    isOnboardingOpen: boolean;
 
     // Storage stats
     storageStats: StorageStats;
@@ -71,13 +74,18 @@ interface VortexStore {
     openCreateGroupModal: () => void;
     openReconnectModal: (peerId: string) => void;
     closeCreateGroupModal: () => void;
+    openOnboarding: () => void;
+    closeOnboarding: () => void;
+    setPassword: (password: string) => Promise<void>;
+    unlock: (password: string) => Promise<boolean>;
     updateProfile: (profile: Partial<UserProfile>) => void;
-    setActiveChat: (chatId: string) => void;
+    setActiveChat: (chatId: string | null) => void;
     loadChatMessages: (chatId: string) => Promise<void>;
     sendMessage: (content: string) => Promise<void>;
     refreshStorageStats: () => Promise<void>;
     clearChat: (chatId: string) => Promise<void>;
     createGroup: (name: string, members: string[]) => void;
+    resetApp: () => Promise<void>;
 
     // WebRTC Actions
     initAsCallerAndCreateOffer: () => Promise<void>;
@@ -96,7 +104,12 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
     peers: {},
     groups: {},
     activeChatId: null,
-    myProfile: { name: 'Me', avatarColor: randomColor(), avatarIcon: 'User' },
+    myProfile: {
+        name: 'Me',
+        avatarColor: randomColor(),
+        avatarIcon: 'User',
+        themeColor: 'hsl(176, 80%, 50%)'
+    },
     messages: {},
 
     rtcEngines: {},
@@ -108,6 +121,9 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
     isConnectModalOpen: false,
     isSettingsModalOpen: false,
     isCreateGroupModalOpen: false,
+    isHydrated: false,
+    isLocked: false,
+    isOnboardingOpen: false,
     reconnectPeerId: null,
     generatedOffer: '',
     generatedAnswer: '',
@@ -133,6 +149,19 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
             groups: groupsObj,
             myProfile: profile || get().myProfile
         });
+
+        if (get().myProfile.themeColor) {
+            applyTheme(get().myProfile.themeColor);
+        }
+
+        const isNewUser = !profile || profile.name === 'Me';
+        const isLocked = !!(profile?.passwordHash);
+
+        set({
+            isHydrated: true,
+            isLocked: isLocked,
+            isOnboardingOpen: isNewUser
+        });
     },
 
     openConnectModal: () => set({
@@ -147,6 +176,59 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
 
     openSettingsModal: () => set({ isSettingsModalOpen: true }),
     closeSettingsModal: () => set({ isSettingsModalOpen: false }),
+
+    resetApp: async () => {
+        // 1. Clear IndexedDB
+        const { db } = await import('../services/storageService');
+        await db.delete(); // Nuclear option: delete the whole DB
+
+        // 2. Clear all browser storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 3. Clear store state (not strictly necessary before reload, but good practice)
+        set({
+            peers: {},
+            groups: {},
+            messages: {},
+            myProfile: { name: 'Me', avatarColor: '#7C3AED', avatarIcon: 'User', themeColor: '#7C3AED' },
+            isHydrated: false,
+            isLocked: false,
+            isOnboardingOpen: true
+        });
+
+        // 4. Force reload to clean slate
+        window.location.reload();
+    },
+
+    openOnboarding: () => set({ isOnboardingOpen: true }),
+    closeOnboarding: () => set({ isOnboardingOpen: false }),
+
+    setPassword: async (password: string) => {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        get().updateProfile({ hasSecurity: true, passwordHash: hashHex });
+    },
+
+    unlock: async (password: string) => {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if (hashHex === get().myProfile.passwordHash) {
+            set({ isLocked: false });
+            return true;
+        }
+        return false;
+    },
+
+    lockApp: () => set({ isLocked: true }),
 
     openCreateGroupModal: () => set({ isCreateGroupModalOpen: true }),
     openReconnectModal: (peerId) => set({
@@ -164,13 +246,19 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
         set({ myProfile: updated });
         saveProfile(updated);
 
+        if (profile.themeColor) {
+            applyTheme(profile.themeColor);
+        }
+
         // Broadcast profile change to all connected peers
         const { rtcEngines } = get();
         Object.values(rtcEngines).forEach(engine => {
-            engine.sendMessage(JSON.stringify({
-                type: 'profile_sync',
-                profile: updated
-            }));
+            if (engine.isReady()) {
+                engine.sendMessage(JSON.stringify({
+                    type: 'profile_sync',
+                    profile: updated
+                }));
+            }
         });
     },
 
@@ -533,3 +621,10 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
 
     setVideoCallModalOpen: (open) => set({ isVideoCallModalOpen: open }),
 }));
+
+/**
+ * Applies a global theme color by updating CSS variables.
+ */
+function applyTheme(color: string) {
+    document.documentElement.style.setProperty('--accent', color);
+}

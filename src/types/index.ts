@@ -56,6 +56,9 @@ export interface UserProfile {
     name: string;
     avatarColor: string;
     avatarIcon: string;
+    themeColor: string;
+    hasSecurity?: boolean;
+    passwordHash?: string | null;
 }
 
 export interface StorageStats {

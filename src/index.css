@@ -9,9 +9,9 @@
   --color-bg-selected: hsl(222, 40%, 16%);
   --color-bg-bubble-out: hsl(210, 70%, 20%);
   --color-bg-bubble-in: hsl(222, 40%, 12%);
-  --color-accent: hsl(176, 80%, 50%);
-  --color-accent-dim: hsl(176, 60%, 35%);
-  --color-accent-glow: hsl(176, 100%, 60%);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-glow: var(--accent-glow);
   --color-border-subtle: hsl(222, 40%, 16%);
   --color-text-primary: hsl(210, 20%, 92%);
   --color-text-secondary: hsl(210, 15%, 60%);
@@ -22,8 +22,8 @@
 
   --font-family-sans: 'Inter', system-ui, sans-serif;
 
-  --shadow-glow-accent: 0 0 20px hsl(176 80% 50% / 0.3);
-  --shadow-glow-accent-sm: 0 0 8px hsl(176 80% 50% / 0.4);
+  --shadow-glow-accent: 0 0 20px var(--accent-shadow);
+  --shadow-glow-accent-sm: 0 0 8px var(--accent-shadow-sm);
   --shadow-panel: 0 4px 32px hsl(222 84% 3% / 0.8);
 
   --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -63,6 +63,14 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+:root {
+  --accent: hsl(176, 80%, 50%);
+  --accent-dim: color-mix(in srgb, var(--accent), black 25%);
+  --accent-glow: color-mix(in srgb, var(--accent), white 20%);
+  --accent-shadow: color-mix(in srgb, var(--accent), transparent 70%);
+  --accent-shadow-sm: color-mix(in srgb, var(--accent), transparent 60%);
 }
 
 *,

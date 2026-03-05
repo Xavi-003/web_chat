@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Search, Plus, Settings, MessageSquare, Shield, Trash2, Users
+    Search, Plus, Settings, MessageSquare, Shield, Trash2, Users, Lock
 } from 'lucide-react';
 import { useVortexStore } from '../../store/useVortexStore';
 import { Avatar } from '../Common/Avatar';
@@ -57,7 +57,7 @@ export function PeerList() {
     const {
         peers, groups, activeChatId, myProfile,
         setActiveChat, openConnectModal, openCreateGroupModal,
-        clearChat, openSettingsModal
+        clearChat, openSettingsModal, lockApp
     } = useVortexStore();
     const [search, setSearch] = useState('');
 
@@ -96,6 +96,15 @@ export function PeerList() {
                         aria-label="New connection"
                     >
                         <Plus className="w-5 h-5" />
+                    </motion.button>
+                    <div className="w-px h-6 bg-white/10 mx-1" />
+                    <motion.button
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={() => lockApp()}
+                        className="btn-ghost text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                        aria-label="Lock Session"
+                    >
+                        <Lock className="w-5 h-5" />
                     </motion.button>
                 </div>
             </div>

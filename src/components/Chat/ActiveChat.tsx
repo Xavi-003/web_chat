@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Video, Search, MoreVertical, Paperclip, Smile, Send, Shield, Lock, RefreshCw } from 'lucide-react';
+import { Phone, Video, Search, MoreVertical, Paperclip, Smile, Send, Shield, Lock, RefreshCw, ChevronLeft } from 'lucide-react';
 import { useVortexStore } from '../../store/useVortexStore';
 import { MessageBubble } from './MessageBubble.tsx';
 import { Avatar } from '../Common/Avatar';
@@ -13,7 +13,7 @@ import { Avatar } from '../Common/Avatar';
 export function ActiveChat() {
     const {
         activeChatId, peers, groups, messages,
-        sendMessage, startVideoCall, openReconnectModal,
+        sendMessage, startVideoCall, openReconnectModal, setActiveChat, lockApp
     } = useVortexStore();
 
     const [inputText, setInputText] = useState('');
@@ -98,6 +98,13 @@ export function ActiveChat() {
             {/* Chat Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-bg-secondary border-b border-border-subtle flex-shrink-0">
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setActiveChat(null)}
+                        className="md:hidden btn-ghost p-1.5 -ml-2"
+                        aria-label="Back to chat list"
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
                     <Avatar
                         avatarColor={avatarColor}
                         avatarIcon={activePeer?.avatarIcon}
