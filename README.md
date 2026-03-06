@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+# Vortex
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vortex is a secure, end-to-end encrypted, serverless Peer-to-Peer (P2P) messaging application built with modern web technologies and packaged natively for desktop operating systems.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 19, TypeScript, Vite
+- **Styling**: Tailwind CSS v4, Framer Motion
+- **State Management**: Zustand
+- **Local Storage**: IndexedDB (via Dexie)
+- **P2P Networking**: WebRTC
+- **Desktop Wrapper**: Tauri (Rust)
+- **Testing**: Vitest, React Testing Library
 
-## React Compiler
+## Key Features
+- **Serverless**: Connect directly to peers using WebRTC. No central database stores your messages.
+- **End-to-End Encryption**: All messages, files, and metadata are encrypted locally before transmission using AES-GCM via the Web Crypto API.
+- **Local First**: Your profile, settings, and chat history never leave your device (stored in IndexedDB).
+- **Cross-Platform**: Run natively on Windows, macOS, and Linux as a lightweight desktop app, or run it directly in the browser.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started Locally
 
-## Expanding the ESLint configuration
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v20+ recommended)
+- [Rust](https://www.rust-lang.org/tools/install) (Required for building the Tauri Desktop app)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Installation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clone the repository and install Node dependencies:
+   ```bash
+   npm install
+   ```
+2. Run the Vite development server (Web only):
+   ```bash
+   npm run dev
+   ```
+3. Run the Tauri development server (Native Desktop window):
+   ```bash
+   npm run tauri dev
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Scripts
+- `npm run dev` - Start web development server
+- `npm run build` - Build web assets for production
+- `npm run lint` - Run ESLint checks
+- `npm run test` - Run Vitest test suites
+- `npm run tauri [command]` - Execute Tauri CLI commands
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## CI/CD Pipeline (Automated Deployments)
+
+This project is configured with a fully automated Release & Deploy pipeline using **GitHub Actions**.
+
+The workflow is triggered by pushing a Git tag starting with `v` (e.g., `v1.0.0`).
+
+### What the pipeline does:
+1. **Checks & Tests**: It runs `npm run lint` and `npm run test` to ensure code quality. The pipeline will fail and halt if any tests or linting rules are broken.
+2. **Web Deployment**: It builds the React application and deploys the static files directly to **GitHub Pages**.
+3. **Desktop Releases**: It spins up macOS, Ubuntu, and Windows runners, installs necessary native dependencies, compiles the Rust-based Tauri wrappers, and creates a **GitHub Release** populated with installable binaries (`.dmg`, `.app`, `.exe`, `.deb`, etc.).
+
+### How to trigger a release:
+```bash
+# 1. Commit your changes
+git commit -am "chore: release version 1.0.0"
+
+# 2. Tag the commit with the new version
+git tag v1.0.0
+
+# 3. Push the commit AND the tag to GitHub
+git push origin main --tags
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Once pushed, navigate to the **Actions** tab on your GitHub repository to monitor the build progress. When complete, the fresh web build will be live on GitHub Pages, and new Desktop installers will be available on the **Releases** page.

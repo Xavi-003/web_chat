@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { encryptText, decryptText, generateKey, exportKey, importKey } from './cryptoService';
+import { encryptText, decryptText, exportKey, importKey } from './cryptoService';
 
 describe('cryptoService', () => {
     describe('Fallback mode (no crypto.subtle)', () => {
