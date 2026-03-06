@@ -35,6 +35,8 @@ export interface DecryptedMessage {
     sender: 'me' | 'peer';
     type: 'text' | 'file' | 'system';
     timestamp: number;
+    targetGroupId?: string;
+    originalSenderAlias?: string;
 }
 
 export interface DecryptedFileMeta {
@@ -54,7 +56,7 @@ class VortexDB extends Dexie {
     files!: Table<StoredFileMetadata>;
     peers!: Table<PeerSession>;
     groups!: Table<GroupSession>;
-    settings!: Table<{ key: string, value: any }>;
+    settings!: Table<{ key: string, value: unknown }>;
 
     constructor() {
         super('VortexDB');
@@ -213,7 +215,7 @@ export async function saveProfile(profile: UserProfile): Promise<void> {
 /** Load user profile */
 export async function loadProfile(): Promise<UserProfile | null> {
     const entry = await db.settings.get('profile');
-    return entry ? entry.value : null;
+    return entry ? (entry.value as UserProfile) : null;
 }
 
 /** Clear all data for a specific peer */

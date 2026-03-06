@@ -30,7 +30,7 @@ export function LoadingOverlay() {
                     <img
                         src="/logo.png"
                         alt="Vortex Logo"
-                        className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(0,242,234,0.3)]"
+                        className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]"
                     />
 
                     {/* Pulsing Ring */}

@@ -66,7 +66,7 @@
 }
 
 :root {
-  --accent: hsl(176, 80%, 50%);
+  --accent: #A855F7;
   --accent-dim: color-mix(in srgb, var(--accent), black 25%);
   --accent-glow: color-mix(in srgb, var(--accent), white 20%);
   --accent-shadow: color-mix(in srgb, var(--accent), transparent 70%);

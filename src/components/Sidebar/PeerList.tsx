@@ -12,9 +12,9 @@ import { Avatar } from '../Common/Avatar';
 import type { PeerSession, GroupSession, ChatMessage } from '../../types';
 import { formatTimestamp } from '../../utils/formatters';
 
+import type { UserProfile } from '../../types';
 
-
-function MyProfileHeader({ profile, openSettings }: { profile: any, openSettings: () => void }) {
+function MyProfileHeader({ profile, openSettings }: { profile: UserProfile, openSettings: () => void }) {
     return (
         <div className="flex items-center gap-3 px-4 py-3 bg-white/5 border-b border-white/5 group cursor-pointer hover:bg-white/10 transition-colors" onClick={openSettings}>
             <Avatar
@@ -123,7 +123,7 @@ export function PeerList() {
                         placeholder="Search or start new chat"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="input-base w-full pl-9 py-2 text-sm"
+                        className="input-base w-full !pl-10 py-2 text-sm"
                         aria-label="Search peers"
                     />
                 </div>
@@ -157,7 +157,7 @@ export function PeerList() {
                                     onKeyDown={(e) => e.key === 'Enter' && setActiveChat(item.id)}
                                     aria-label={`Open chat with ${item.displayName}`}
                                 >
-                                    <PeerAvatar peer={item as any} />
+                                    <PeerAvatar peer={item as unknown as PeerSession} />
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
                                             <p className="text-text-primary font-medium text-sm truncate">
@@ -169,7 +169,7 @@ export function PeerList() {
                                         </div>
                                         <div className="flex items-center justify-between mt-0.5">
                                             <p className="text-text-muted text-xs truncate flex-1">
-                                                {formatMessage(item.lastMessage) || (item.type === 'group' ? `${(item as any).memberIds?.length} members` : ((item as any).connectionState === 'connected' ? 'Connection active' : 'Disconnected'))}
+                                                {formatMessage(item.lastMessage) || (item.type === 'group' ? `${(item as unknown as GroupSession).memberIds?.length} members` : ((item as unknown as PeerSession).connectionState === 'connected' ? 'Connection active' : 'Disconnected'))}
                                             </p>
                                             <div className="flex items-center gap-1 ml-2">
                                                 {item.unreadCount > 0 && (

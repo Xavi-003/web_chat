@@ -78,6 +78,7 @@ interface VortexStore {
     closeOnboarding: () => void;
     setPassword: (password: string) => Promise<void>;
     unlock: (password: string) => Promise<boolean>;
+    lockApp: () => void;
     updateProfile: (profile: Partial<UserProfile>) => void;
     setActiveChat: (chatId: string | null) => void;
     loadChatMessages: (chatId: string) => Promise<void>;
@@ -106,9 +107,9 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
     activeChatId: null,
     myProfile: {
         name: 'Me',
-        avatarColor: randomColor(),
+        avatarColor: '#A855F7',
         avatarIcon: 'User',
-        themeColor: 'hsl(176, 80%, 50%)'
+        themeColor: '#A855F7'
     },
     messages: {},
 
@@ -137,6 +138,12 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
         const peersArr = await loadPeers();
         const groupsArr = await loadGroups();
         const profile = await loadProfile();
+
+        // MIGRATION: If profile has legacy Teal color, reset it to the new Purple.
+        if (profile && profile.themeColor === 'hsl(176, 80%, 50%)') {
+            profile.themeColor = '#A855F7';
+            saveProfile(profile);
+        }
 
         const peersObj: Record<string, PeerSession> = {};
         const groupsObj: Record<string, GroupSession> = {};
@@ -191,7 +198,7 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
             peers: {},
             groups: {},
             messages: {},
-            myProfile: { name: 'Me', avatarColor: '#7C3AED', avatarIcon: 'User', themeColor: '#7C3AED' },
+            myProfile: { name: 'Me', avatarColor: '#A855F7', avatarIcon: 'User', themeColor: '#A855F7' },
             isHydrated: false,
             isLocked: false,
             isOnboardingOpen: true
@@ -264,6 +271,8 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
 
     setActiveChat: (chatId) => {
         set({ activeChatId: chatId });
+        if (!chatId) return;
+
         const { peers, groups } = get();
         if (peers[chatId]) {
             set(state => ({ peers: { ...state.peers, [chatId]: { ...state.peers[chatId], unreadCount: 0 } } }));
@@ -288,8 +297,8 @@ export const useVortexStore = create<VortexStore>((set, get) => ({
             type: m.type,
             timestamp: m.timestamp,
             status: 'delivered',
-            targetGroupId: (m as any).targetGroupId,
-            originalSenderAlias: (m as any).originalSenderAlias,
+            targetGroupId: m.targetGroupId,
+            originalSenderAlias: m.originalSenderAlias,
         }));
         set(state => ({ messages: { ...state.messages, [chatId]: messages } }));
     },

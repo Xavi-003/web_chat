@@ -4,10 +4,10 @@
  */
 import { motion } from 'framer-motion';
 import {
-    User, Ghost, Bird, Dog, Zap, Flame, Star, Coffee, Users
+    User, Ghost, Bird, Dog, Zap, Flame, Star, Coffee, Users, type LucideIcon
 } from 'lucide-react';
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, LucideIcon> = {
     User, Ghost, Bird, Dog, Zap, Flame, Star, Coffee, Users
 };
 

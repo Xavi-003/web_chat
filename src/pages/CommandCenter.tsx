@@ -24,16 +24,21 @@ export function CommandCenter() {
 
     // On startup: clean old data and refresh storage stats
     useEffect(() => {
+        let mounted = true;
         (async () => {
+            if (!mounted) return;
             await hydrate();
             await autoCleanupDB();
             await refreshStorageStats();
         })();
-    }, []);
+        return () => { mounted = false; };
+    }, [hydrate, refreshStorageStats]);
 
     // On mobile: when activePeer changes, show chat panel
     useEffect(() => {
-        if (activeChatId) setIsMobileShowingChat(true);
+        if (activeChatId) {
+            queueMicrotask(() => setIsMobileShowingChat(true));
+        }
     }, [activeChatId]);
 
     return (

@@ -158,6 +158,15 @@ export function ActiveChat() {
                     <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-ghost" aria-label="More options">
                         <MoreVertical className="w-5 h-5" />
                     </motion.button>
+                    <div className="w-px h-6 bg-white/10 mx-1" />
+                    <motion.button
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={() => lockApp()}
+                        className="btn-ghost text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                        aria-label="Lock Session"
+                    >
+                        <Lock className="w-5 h-5" />
+                    </motion.button>
                 </div>
             </div>
 

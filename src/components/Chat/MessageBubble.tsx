@@ -32,13 +32,13 @@ export function MessageBubble({ message }: Props) {
 
     const isMe = sender === 'me';
 
-    function StatusIcon() {
+    const renderStatus = () => {
         if (!isMe) return null;
         if (status === 'delivered') return <CheckCheck className="w-3.5 h-3.5 text-accent" />;
         if (status === 'sent') return <Check className="w-3.5 h-3.5 text-text-muted" />;
         if (status === 'failed') return <Check className="w-3.5 h-3.5 text-danger" />;
         return null;
-    }
+    };
 
     return (
         <motion.div
@@ -69,7 +69,7 @@ export function MessageBubble({ message }: Props) {
                 {/* Timestamp + status */}
                 <div className={`flex items-center gap-1 mt-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
                     <span className="text-text-muted text-[10px] leading-none">{formatFullTime(timestamp)}</span>
-                    <StatusIcon />
+                    {renderStatus()}
                 </div>
             </div>
         </motion.div>
